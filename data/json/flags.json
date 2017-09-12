@@ -178,6 +178,27 @@
     "info": "This clothing has <info>pockets</info> to warm your hands when you are wielding nothing."
   },
   {
+    "id": "POWER_ARMOR",
+    "type": "json_flag",
+    "context": [ "ARMOR", "TOOL_ARMOR" ],
+    "description": "This is used to designate power armor.",
+    "info": "This gear is a suit of <info>power armor</info>."
+  },
+  {
+    "id": "POWER_ARMOR_COMPONENT",
+    "type": "json_flag",
+    "context": [ "ARMOR", "TOOL_ARMOR" ],
+    "description": "This is used to designate items that only function in combination with power armor.",
+    "info": "This is a <info>power armor component</info> and can only be worn in combination with <info>power armor</info>."
+  },
+  {
+    "id": "POWER_ARMOR_HELMET",
+    "type": "json_flag",
+    "context": [ "ARMOR", "TOOL_ARMOR" ],
+    "description": "This is used to designate helmets for use in combination with power armor.",
+    "info": "This is a <info>power armor helmet</info> and can only be worn in combination with <info>power armor</info>."
+  },
+  {
     "id": "RAD_PROOF",
     "type": "json_flag",
     "context": [ "ARMOR", "TOOL_ARMOR" ],
