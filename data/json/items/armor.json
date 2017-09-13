@@ -6869,6 +6869,7 @@
     "use_action": {
       "type": "ups_based_armor",
       "activate_msg": "Your optical cloak flickers as it becomes transparent.",
+      "deactive_msg": "Your optical cloak flickers and becomes opaque.",
       "warning_msg": "Your optical cloak flickers ominously before stabilizing.",
       "warning_threshold": 200,
       "out_of_power_msg": "Your optical cloak flickers and goes opaque!",
