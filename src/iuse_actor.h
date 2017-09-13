@@ -301,8 +301,14 @@ class ups_based_armor_actor : public iuse_actor
         std::string activate_msg;
         /** Shown when deactivated. */
         std::string deactive_msg;
+        /** Displays when you cross warning threshold. */
+        std::string warning_msg;
+        /** The power threshold when the warning message displays. */
+        int warning_threshold;
         /** Shown when it runs out of power. */
         std::string out_of_power_msg;
+        /** Amount of passive drain from the item */
+        int passive_cost;
 
         ups_based_armor_actor( const std::string &type = "ups_based_armor" ) : iuse_actor( type ) {}
 

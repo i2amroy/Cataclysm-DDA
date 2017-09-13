@@ -455,7 +455,12 @@ bool item::swap_side()
 
 bool item::is_worn_only_with( const item &it ) const
 {
-    return is_power_armor() && it.is_power_armor() && it.covers( bp_torso );
+    // Currently the only example of dependency is power armor helmets/components and power armor
+    if( it.has_flag( "POWER_ARMOR" ) &&
+        ( has_flag( "POWER_ARMOR_HELMET" ) || has_flag( "POWER_ARMOR_COMPONENT" ) ) ) {
+        return true;
+    }
+    return false;
 }
 
 item item::in_its_container() const
@@ -1589,10 +1594,10 @@ std::string item::info( bool showtext, std::vector<iteminfo> &info ) const
             if( is_power_armor() ) {
                 info.push_back( iteminfo( "DESCRIPTION",
                                           _( "* This gear is a part of <info>power armor</info>." ) ) );
-                if( covers( bp_head ) ) {
+                if( has_flag( "POWER_ARMOR_HELMET" ) ) {
                     info.push_back( iteminfo( "DESCRIPTION",
                                               _( "* When worn with a power armor suit, it will <good>fully protect</good> you from <info>radiation</info>." ) ) );
-                } else {
+                } else if ( has_flag( "POWER_ARMOR" ) ) {
                     info.push_back( iteminfo( "DESCRIPTION",
                                               _( "* When worn with a power armor helmet, it will <good>fully protect</good> you from <info>radiation</info>." ) ) );
                 }
@@ -2906,13 +2911,34 @@ int item::get_env_resist() const
     return static_cast<int>( static_cast<unsigned int>( t->env_resist ) );
 }
 
-bool item::is_power_armor() const
+bool item::is_headwear() const
 {
-    const auto t = find_armor_data();
-    if( t == nullptr ) {
+    // If it doesn't cover the head, eyes, or mouth, it's not headwear
+    if( !covers( bp_head ) && !covers( bp_eyes ) && !covers( bp_mouth ) ) {
         return false;
     }
-    return t->power_armor;
+    // But if it does we need to make sure that it doesn't cover anything else either,
+    // lest things like full body suits be considered "headwear"
+    for( int i = 0; i < num_bp; ++i ) {
+        body_part bp = body_part( i );
+        if( bp != bp_head && bp != bp_eyes && bp != bp_mouth && covers( bp ) ) {
+            return false;
+        }
+    }
+
+    // It covered at least one of the head parts and no non-head parts, so return true
+    return true;
+}
+
+bool item::is_power_armor() const
+{
+    return has_flag( "POWER_ARMOR" ) || has_flag( "POWER_ARMOR_HELMET" ) ||
+           has_flag( "POWER_ARMOR_COMPONENT" );
+}
+
+bool item::is_power_armor_component() const
+{
+    return has_flag( "POWER_ARMOR_HELMET" ) || has_flag( "POWER_ARMOR_COMPONENT" );
 }
 
 int item::get_encumber() const

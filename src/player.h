@@ -1111,7 +1111,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Returns 1 if the player is wearing an item of that count on one foot, 2 if on both, and zero if on neither */
         int shoe_type_count(const itype_id &it) const;
         /** Returns true if the player is wearing power armor */
-        bool is_wearing_power_armor(bool *hasHelmet = NULL) const;
+        bool is_wearing_power_armor(bool *hasHelmet = nullptr) const;
         /** Returns wind resistance provided by armor, etc **/
         int get_wind_resistance(body_part bp) const;
         /** Returns the effect of pain on stats */
@@ -1151,6 +1151,21 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
          * All items that have the given flag (@ref item::has_flag).
          */
         std::vector<const item *> all_items_with_flag( const std::string flag ) const;
+
+        /**
+         * Returns the current amount of power the player has avaliable for powering UPS armor
+         * @param power_armor Whether or not the item this is being used for is power armor
+         * @return The current amount of power (potentially bionic added) has avaliable for use
+         */
+        int get_armor_power( bool power_armor );
+        /**
+         * Attempts to drain a set amount of power either from a player's bionic amount or from a
+         * UPS. IF the player does not have the required amount it drains nothing and returns false.
+         * @param amount The amount of charges to drain
+         * @param power_armor Whether or not the item this is being used for is power armor
+         * @return true if amount was drained successfully
+         */
+        bool armor_drain_power( int amount, bool power_armor );
 
         void process_active_items();
         /**

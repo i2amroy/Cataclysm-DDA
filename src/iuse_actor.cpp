@@ -732,11 +732,14 @@ void ups_based_armor_actor::load( JsonObject &obj )
 {
     obj.read( "activate_msg", activate_msg );
     obj.read( "deactive_msg", deactive_msg );
+    obj.read( "warning_msg", warning_msg );
+    obj.read( "warning_threshold", warning_threshold );
     obj.read( "out_of_power_msg", out_of_power_msg );
+    obj.read( "passive_cost", passive_cost );
 }
 
 bool has_powersource(const item &i, const player &p) {
-    if( i.is_power_armor() && p.can_interface_armor() && p.power_level > 0 ) {
+    if( i.has_flag( "POWER_ARMOR" ) && p.can_interface_armor() && p.power_level > 0 ) {
         return true;
     }
     return p.has_charges( "UPS", 1 );
@@ -745,17 +748,48 @@ bool has_powersource(const item &i, const player &p) {
 long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) const
 {
     if( t ) {
-        // Normal, continuous usage, do nothing. The item is *not* charge-based.
+        // Charge the passive cost of the item to the player
+        if( passive_cost != 0 ) {
+            // If we have a warning message check to see if we will cross the warning threshold
+            if( !warning_msg.empty() ) {
+                int current_power = p.get_armor_power( it.is_power_armor() );
+                if( current_power > warning_threshold &&
+                    current_power - passive_cost <= warning_threshold ) {
+                    p.add_msg_if_player( m_warning, _( warning_msg.c_str() ),
+                                         it.tname().c_str() );
+                }
+            }
+            // Actually drain the power here
+            if( p.armor_drain_power( passive_cost, it.is_power_armor() ) ) {
+                // We had enough charges to cover the cost, so return here
+                return 0;
+            } else {
+                // We didn't have enough charge to cover the passive costs, deactivate the item and
+                // print out the out of power message
+                it.active = false;
+                if( deactive_msg.empty() ) {
+                    p.add_msg_if_player( m_bad, _( "Your %s shuts down!" ), it.tname().c_str() );
+                } else {
+                    p.add_msg_if_player( m_bad, _( out_of_power_msg.c_str() ),
+                                         it.tname().c_str() );
+                }
+            }
+        }
+        // Item doesn't have a passive cost
         return 0;
     }
     if( p.get_item_position( &it ) >= -1 ) {
-        p.add_msg_if_player( m_info, _( "You should wear the %s before activating it." ), it.tname().c_str() );
+        p.add_msg_if_player( m_info, _( "You should wear the %s before activating it." ),
+                             it.tname().c_str() );
         return 0;
     }
     if( !it.active && !has_powersource( it, p ) ) {
-        p.add_msg_if_player( m_info, _( "You need some source of power for your %s (a simple UPS will do)." ), it.tname().c_str() );
-        if( it.is_power_armor() ) {
-            p.add_msg_if_player( m_info, _( "There is also a certain bionic that helps with this kind of armor." ) );
+        p.add_msg_if_player( m_info,
+                             _( "You need some source of power for your %s (a simple UPS will do)." ),
+                             it.tname().c_str() );
+        if( it.has_flag( "POWER_ARMOR" ) ) {
+            p.add_msg_if_player( m_info,
+                                 _( "There is also a certain bionic that helps with this kind of armor." ) );
         }
         return 0;
     }
@@ -764,13 +798,13 @@ long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) 
         if( activate_msg.empty() ) {
             p.add_msg_if_player( m_info, _( "You activate your %s." ), it.tname().c_str() );
         } else {
-            p.add_msg_if_player( m_info, _( activate_msg.c_str() ) , it.tname().c_str() );
+            p.add_msg_if_player( m_info, _( activate_msg.c_str() ), it.tname().c_str() );
         }
     } else {
         if( deactive_msg.empty() ) {
             p.add_msg_if_player( m_info, _( "You deactivate your %s." ), it.tname().c_str() );
         } else {
-            p.add_msg_if_player( m_info, _( deactive_msg.c_str() ) , it.tname().c_str() );
+            p.add_msg_if_player( m_info, _( deactive_msg.c_str() ), it.tname().c_str() );
         }
     }
     return 0;

@@ -6869,7 +6869,10 @@
     "use_action": {
       "type": "ups_based_armor",
       "activate_msg": "Your optical cloak flickers as it becomes transparent.",
-      "deactive_msg": "Your optical cloak flickers for a moment as it becomes opaque."
+      "warning_msg": "Your optical cloak flickers ominously before stabilizing.",
+      "warning_threshold": 200,
+      "out_of_power_msg": "Your optical cloak flickers and goes opaque!",
+      "passive_cost": 20
     },
     "flags": [ "OVERSIZE", "HOOD", "WATERPROOF", "OUTER", "VARSIZE" ]
   },
@@ -7290,7 +7293,8 @@
     "environmental_protection": 10,
     "use_action": {
       "type": "ups_based_armor",
-      "activate_msg": "Your power armor engages."
+      "activate_msg": "Your power armor engages.",
+      "deactive_msg": "Your power armor disengages."
     },
     "flags": [ "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "POWER_ARMOR" ]
   },
@@ -7339,7 +7343,8 @@
     "environmental_protection": 16,
     "use_action": {
       "type": "ups_based_armor",
-      "activate_msg": "Your power armor engages."
+      "activate_msg": "Your power armor engages.",
+      "deactive_msg": "Your power armor disengages."
     },
     "flags": [ "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "POWER_ARMOR" ]
   },
@@ -7439,7 +7444,8 @@
     "environmental_protection": 8,
     "use_action": {
       "type": "ups_based_armor",
-      "activate_msg": "Your power armor engages."
+      "activate_msg": "Your power armor engages.",
+      "deactive_msg": "Your power armor disengages."
     },
     "flags": [ "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "POWER_ARMOR" ]
   },

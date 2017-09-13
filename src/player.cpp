@@ -6693,6 +6693,46 @@ void player::check_and_recover_morale()
     }
 }
 
+int player::get_armor_power( bool power_armor )
+{
+    if( power_armor ) {
+        return charges_of( "UPS" ) + power_level;
+    }
+
+    return charges_of( "UPS" );
+}
+
+bool player::armor_drain_power( int amount, bool power_armor )
+{
+    long ch_UPS = charges_of( "UPS" );
+    // If it's power armor and we have an active interface bionic try to draw from that first
+    if( power_armor ) {
+        if( can_interface_armor() ) {
+            if( power_level >= amount ) {
+                charge_power( -amount );
+                return true;
+
+                // We didn't have enough on our own, but we might have enough with UPS help
+            } else if( power_level + ch_UPS >= amount ) {
+                charge_power( -power_level );
+                use_charges( "UPS", amount - power_level );
+                return true;
+            }
+
+
+        }
+    }
+
+    // Either it's not power armor or we didn't have enough bionic power to power it
+    if( ch_UPS >= amount ) {
+        use_charges( "UPS", amount );
+        return true;
+    }
+
+    // We didn't have enough to cover the cost, return false
+    return false;
+}
+
 void player::process_active_items()
 {
     if( weapon.needs_processing() && weapon.process( this, pos(), false ) ) {
@@ -6713,36 +6753,19 @@ void player::process_active_items()
     } );
 
     long ch_UPS = charges_of( "UPS" );
-    item *cloak = nullptr;
     item *power_armor = nullptr;
     // Manual iteration because we only care about *worn* active items.
     for( auto &w : worn ) {
         if( !w.active ) {
             continue;
         }
-        if( w.typeId() == OPTICAL_CLOAK_ITEM_ID ) {
-            cloak = &w;
-        }
         // Only the main power armor item can be active, the other ones (hauling frame, helmet) aren't.
-        if( power_armor == nullptr && w.is_power_armor() ) {
+        if( power_armor == nullptr && w.has_flag( "POWER_ARMOR" ) ) {
             power_armor = &w;
         }
     }
-    if( cloak != nullptr ) {
-        if( ch_UPS >= 20 ) {
-            use_charges( "UPS", 20 );
-            if( ch_UPS < 200 && one_in( 3 ) ) {
-                add_msg_if_player( m_warning, _( "Your optical cloak flickers for a moment!" ) );
-            }
-        } else if( ch_UPS > 0 ) {
-            use_charges( "UPS", ch_UPS );
-        } else {
-            add_msg_if_player( m_warning, _( "Your optical cloak flickers for a moment as it becomes opaque." ) );
-            // Bypass the "you deactivate the ..." message
-            cloak->active = false;
-        }
-    }
 
+    // TODO: REMOVE THIS
     // For powered armor, an armor-powering bionic should always be preferred over UPS usage.
     if( power_armor != nullptr ) {
         const int power_cost = 4;
@@ -7613,19 +7636,21 @@ bool player::can_wear( const item& it, bool alert ) const
     }
 
     if( it.is_power_armor() ) {
-        for( auto &elem : worn ) {
-            if( ( elem.get_covered_body_parts() & it.get_covered_body_parts() ).any() ) {
-                if( alert ) {
-                    add_msg_if_player( m_info, _( "You can't wear power armor over other gear!" ) );
+        if ( it.has_flag( "POWER_ARMOR" ) ) {
+            for( auto &elem : worn ) {
+                if( ( elem.get_covered_body_parts() & it.get_covered_body_parts() ).any() ) {
+                    if( alert ) {
+                        add_msg_if_player( m_info,
+                                           _( "You can't wear power armor over other gear!" ) );
+                    }
+                    return false;
                 }
-                return false;
             }
-        }
-        if( !it.covers( bp_torso ) ) {
+        } else if( it.has_flag( "POWER_ARMOR_HELMET" ) || it.has_flag( "POWER_ARMOR_COMPONENT" ) ) {
             bool power_armor = false;
-            if( worn.size() ) {
+            if( !worn.empty() ) {
                 for( auto &elem : worn ) {
-                    if( elem.is_power_armor() ) {
+                    if( elem.has_flag( "POWER_ARMOR" ) ) {
                         power_armor = true;
                         break;
                     }
@@ -7650,18 +7675,14 @@ bool player::can_wear( const item& it, bool alert ) const
         }
     } else {
         // Only headgear can be worn with power armor, except other power armor components.
-        // You can't wear headgear if power armor helmet is already sitting on your head.
+        // You can't wear headgear if a power armor helmet is already sitting on your head.
         bool has_helmet = false;
-        if( ( is_wearing_power_armor( &has_helmet ) && has_helmet ) &&
-            ( !it.covers( bp_head ) || !it.covers( bp_mouth ) || !it.covers( bp_eyes ) ) ) {
-            for( auto &i : worn ) {
-                if( i.is_power_armor() ) {
-                    if( alert ) {
-                        add_msg_if_player( m_info, _( "You can't wear %s with power armor!" ), it.tname().c_str() );
-                    }
-                    return false;
-                }
+        if( is_wearing_power_armor( &has_helmet) && (!it.is_headwear() || has_helmet)) {
+            if( alert ) {
+                add_msg_if_player( m_info, _( "You can't wear %s with power armor!" ),
+                                   it.tname().c_str() );
             }
+            return false;
         }
     }
 
@@ -10588,20 +10609,23 @@ int player::shoe_type_count(const itype_id & it) const
 bool player::is_wearing_power_armor(bool *hasHelmet) const {
     bool result = false;
     for( auto &elem : worn ) {
-        if( !elem.is_power_armor() ) {
-            continue;
-        }
-        if (hasHelmet == NULL) {
-            // found power armor, helmet not requested, cancel loop
+        if( elem.has_flag( "POWER_ARMOR_HELMET" ) ) {
+            // PA helmets can only be worn with PA, so both are true here
+            if (hasHelmet != nullptr) {
+                *hasHelmet = true;
+            }
             return true;
-        }
-        // found power armor, continue search for helmet
-        result = true;
-        if( elem.covers( bp_head ) ) {
-            *hasHelmet = true;
-            return true;
+        } else if( elem.has_flag( "POWER_ARMOR" ) ) {
+            if (hasHelmet == nullptr) {
+                // We don't need to look for a helmet, so just return true
+                return true;
+            }
+            // If we're here we found armor, but still need to look for a helmet, store that we
+            // found some armor in result in case we never find a helmet.
+            result = true;
         }
     }
+    // Either we didn't find anything, or we found just armor when we were looking for both
     return result;
 }
 

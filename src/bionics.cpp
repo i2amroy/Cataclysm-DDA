@@ -632,7 +632,7 @@ bool attempt_recharge( player &p, bionic &bio, int &amount, int factor = 1, int 
         if( info.armor_interface ) {
             // Don't spend any power on armor interfacing unless we're wearing active powered armor.
             bool powered_armor = std::any_of( p.worn.begin(), p.worn.end(),
-                []( const item &w ) { return w.active && w.is_power_armor(); } );
+                []( const item &w ) { return w.active && w.has_flag( "POWER_ARMOR" ); } );
             if( !powered_armor ) {
                 power_cost -= armor_power_cost * factor;
             }

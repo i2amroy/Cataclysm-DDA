@@ -1290,10 +1290,17 @@ public:
          */
         int get_env_resist() const;
         /**
-         * Whether this is a power armor item. Not necessarily the main armor, it could be a helmet
-         * or similar.
+         * Whether this is headwear.
+         */
+        bool is_headwear() const;
+        /**
+         * Whether this is a power armor item. This triggers on both the main armor and components.
          */
         bool is_power_armor() const;
+        /**
+         * Whether this is a power armor item. This will trigger on everything except the main armor.
+         */
+        bool is_power_armor_component() const;
         /**
          * If this is an armor item, return its armor data. You should probably not use this function,
          * use the various functions above (like @ref get_storage) to access armor data directly.
