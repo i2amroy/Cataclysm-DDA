@@ -207,10 +207,6 @@ struct islot_armor {
      * How much storage this items provides when worn.
      */
     units::volume storage = 0;
-    /**
-     * Whether this is a power armor item.
-     */
-    bool power_armor = false;
 };
 
 struct islot_book {

@@ -6693,9 +6693,9 @@ void player::check_and_recover_morale()
     }
 }
 
-int player::get_armor_power( bool power_armor )
+int player::get_armor_power( bool armor_interface )
 {
-    if( power_armor ) {
+    if( armor_interface ) {
         return charges_of( "UPS" ) + power_level;
     }
 

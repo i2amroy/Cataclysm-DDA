@@ -1154,10 +1154,10 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
 
         /**
          * Returns the current amount of power the player has avaliable for powering UPS armor
-         * @param power_armor Whether or not the item this is being used for is power armor
+         * @param armor_interface Whether or not the item this is being used for is power armor
          * @return The current amount of power (potentially bionic added) has avaliable for use
          */
-        int get_armor_power( bool power_armor );
+        int get_armor_power( bool armor_interface );
         /**
          * Attempts to drain a set amount of power either from a player's bionic amount or from a
          * UPS. IF the player does not have the required amount it drains nothing and returns false.

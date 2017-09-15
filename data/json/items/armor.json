@@ -7289,7 +7289,6 @@
     "encumbrance": 50,
     "storage": 10,
     "warmth": 90,
-    "power_armor": true,
     "material_thickness": 11,
     "environmental_protection": 10,
     "use_action": {
@@ -7317,7 +7316,6 @@
     "coverage": 100,
     "encumbrance": 40,
     "storage": 120,
-    "power_armor": true,
     "material_thickness": 10,
     "flags": [ "WATERPROOF", "STURDY", "BELTED", "POWER_ARMOR_COMPONENT" ]
   },
@@ -7340,7 +7338,6 @@
     "encumbrance": 60,
     "storage": 16,
     "warmth": 60,
-    "power_armor": true,
     "material_thickness": 12,
     "environmental_protection": 16,
     "use_action": {
@@ -7369,7 +7366,6 @@
     "coverage": 100,
     "encumbrance": 50,
     "warmth": 90,
-    "power_armor": true,
     "material_thickness": 11,
     "environmental_protection": 10,
     "qualities": [ [ "GLARE", 2 ] ],
@@ -7393,7 +7389,6 @@
     "coverage": 100,
     "encumbrance": 60,
     "warmth": 60,
-    "power_armor": true,
     "material_thickness": 12,
     "environmental_protection": 16,
     "qualities": [ [ "GLARE", 2 ] ],
@@ -7417,7 +7412,6 @@
     "coverage": 100,
     "encumbrance": 40,
     "warmth": 60,
-    "power_armor": true,
     "material_thickness": 9,
     "environmental_protection": 8,
     "qualities": [ [ "GLARE", 2 ] ],
@@ -7442,7 +7436,6 @@
     "encumbrance": 40,
     "storage": 16,
     "warmth": 60,
-    "power_armor": true,
     "material_thickness": 9,
     "environmental_protection": 8,
     "use_action": {

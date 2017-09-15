@@ -666,7 +666,6 @@ Armor can be defined like this:
 "encumbrance" : 0,    // Base encumbrance (unfitted value)
 "coverage" : 80,      // What percentage of body part
 "material_thickness" : 1  // Thickness of material, in millimetre units (approximately).  Generally ranges between 1 - 5, more unusual armor types go up to 10 or more
-"power_armor" : false, // If this is a power armor item (those are special).
 ```
 Alternately, every item (book, tool, gun, even food) can be used as armor if it has armor_data:
 ```json
@@ -680,7 +679,6 @@ Alternately, every item (book, tool, gun, even food) can be used as armor if it 
     "encumbrance" : 0,
     "coverage" : 80,
     "material_thickness" : 1
-    "power_armor" : false
 }
 ```
 
