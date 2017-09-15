@@ -736,6 +736,7 @@ void ups_based_armor_actor::load( JsonObject &obj )
     obj.read( "warning_threshold", warning_threshold );
     obj.read( "out_of_power_msg", out_of_power_msg );
     obj.read( "passive_cost", passive_cost );
+    obj.read( "indirect_act", indirect_act );
 }
 
 bool has_powersource(const item &i, const player &p) {
@@ -775,9 +776,15 @@ long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) 
                 }
             }
         }
-        // Item doesn't have a passive cost
+        // Item doesn't have a passive cost to itself
         return 0;
     }
+    if( indirect_act ) {
+        p.add_msg_if_player( m_info, _( "%s draws its power from a main armor system, you can't activate it directly." ),
+                             it.tname().c_str() );
+        return 0;
+    }
+
     if( p.get_item_position( &it ) >= -1 ) {
         p.add_msg_if_player( m_info, _( "You should wear the %s before activating it." ),
                              it.tname().c_str() );
@@ -805,6 +812,41 @@ long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) 
             p.add_msg_if_player( m_info, _( "You deactivate your %s." ), it.tname().c_str() );
         } else {
             p.add_msg_if_player( m_info, _( deactive_msg.c_str() ), it.tname().c_str() );
+        }
+    }
+    // Handle indirect activations if necessary, this involves a bit of drilling down on our other
+    // items to actually get to the information we need
+    if( it.has_flag( "POWER_ARMOR" ) ) {
+        // Go through each of our worn items
+        for( auto &w : p.worn ) {
+            const auto test_func = w.type->get_use( "ups_based_armor" );
+            // If the item is a ups_based_armor, and has a proper actor pointer
+            if( test_func != nullptr && test_func->get_actor_ptr() != nullptr ) {
+                const auto actor = dynamic_cast<const ups_based_armor_actor *>( test_func->get_actor_ptr() );
+                // and the item is indirectly activated
+                if( actor->indirect_act ) {
+                    // Then make it match our activation state
+                    w.active = it.active;
+                    // and print out the necessary message.
+                    if( w.active ) {
+                        if( actor->activate_msg.empty() ) {
+                            p.add_msg_if_player( m_info, _( "You activate your %s." ),
+                                                 w.tname().c_str() );
+                        } else {
+                            p.add_msg_if_player( m_info, _( actor->activate_msg.c_str() ),
+                                                 w.tname().c_str() );
+                        }
+                    } else {
+                        if( actor->deactive_msg.empty() ) {
+                            p.add_msg_if_player( m_info, _( "You deactivate your %s." ),
+                                                 w.tname().c_str() );
+                        } else {
+                            p.add_msg_if_player( m_info, _( actor->deactive_msg.c_str() ),
+                                                 w.tname().c_str() );
+                        }
+                    }
+                }
+            }
         }
     }
     return 0;
