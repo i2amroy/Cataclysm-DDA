@@ -906,6 +906,7 @@ public:
  bool is_salvageable() const;
 
  bool is_tool() const;
+ bool is_ups_armor() const;
  bool is_tool_reversible() const;
  bool is_var_veh_part() const;
  bool is_artifact() const;

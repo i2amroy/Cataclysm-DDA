@@ -3807,6 +3807,11 @@ bool item::is_tool() const
     return type->tool != nullptr;
 }
 
+bool item::is_ups_armor() const
+{
+    return type->get_use( "ups_based_armor" ) != nullptr;
+}
+
 bool item::is_tool_reversible() const
 {
     if( is_tool() && type->tool->revert_to != "null" ) {
@@ -5759,6 +5764,10 @@ bool item::process( player *carrier, const tripoint &pos, bool activate )
     }
     if( is_tool() ) {
         return process_tool( carrier, pos );
+    }
+    if( is_ups_armor() ) {
+        type->tick( carrier != nullptr ? *carrier : g->u, *this, pos );
+        return false;
     }
     return false;
 }
