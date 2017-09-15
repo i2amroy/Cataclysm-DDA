@@ -6752,39 +6752,9 @@ void player::process_active_items()
         return itm.needs_processing() && itm.process( this, pos(), false );
     } );
 
-    long ch_UPS = charges_of( "UPS" );
-    item *power_armor = nullptr;
-    // Manual iteration because we only care about *worn* active items.
-    for( auto &w : worn ) {
-        if( !w.active ) {
-            continue;
-        }
-        // Only the main power armor item can be active, the other ones (hauling frame, helmet) aren't.
-        if( power_armor == nullptr && w.has_flag( "POWER_ARMOR" ) ) {
-            power_armor = &w;
-        }
-    }
-
-    // TODO: REMOVE THIS
-    // For powered armor, an armor-powering bionic should always be preferred over UPS usage.
-    if( power_armor != nullptr ) {
-        const int power_cost = 4;
-        bool bio_powered = can_interface_armor() && power_level > 0;
-        // Bionic power costs are handled elsewhere.
-        if( !bio_powered ) {
-            if( ch_UPS >= power_cost ) {
-                use_charges( "UPS", power_cost );
-            } else {
-                // Deactivate armor here, bypassing the usual deactivation message.
-                add_msg_if_player( m_warning, _( "Your power armor disengages." ) );
-                power_armor->active = false;
-            }
-        }
-    }
-
     // Load all items that use the UPS to their minimal functional charge,
     // The tool is not really useful if its charges are below charges_to_use
-    ch_UPS = charges_of( "UPS" ); // might have been changed by cloak
+    long ch_UPS = charges_of( "UPS" );
     long ch_UPS_used = 0;
     for( size_t i = 0; i < inv.size() && ch_UPS_used < ch_UPS; i++ ) {
         item &it = inv.find_item(i);
@@ -7628,6 +7598,7 @@ item::reload_option player::select_ammo( const item& base, bool prompt ) const
 
 bool player::can_wear( const item& it, bool alert ) const
 {
+    // If it's not armor then we can't wear it
     if( !it.is_armor() ) {
         if( alert ) {
             add_msg_if_player( m_info, _( "Putting on a %s would be tricky." ), it.tname().c_str() );
@@ -7635,10 +7606,12 @@ bool player::can_wear( const item& it, bool alert ) const
         return false;
     }
 
+    // Power armor has lots of special rules that determine if we can wear it
     if( it.is_power_armor() ) {
+        // If it's the main armor then it can't be worn if it overlaps with any other gear
         if ( it.has_flag( "POWER_ARMOR" ) ) {
             for( auto &elem : worn ) {
-                if( ( elem.get_covered_body_parts() & it.get_covered_body_parts() ).any() ) {
+                if( it.overlaps( elem ) ) {
                     if( alert ) {
                         add_msg_if_player( m_info,
                                            _( "You can't wear power armor over other gear!" ) );
@@ -7646,6 +7619,8 @@ bool player::can_wear( const item& it, bool alert ) const
                     return false;
                 }
             }
+        // If it's a helmet or component then it can only be worn if you are already wearing some
+        // main power armor.
         } else if( it.has_flag( "POWER_ARMOR_HELMET" ) || it.has_flag( "POWER_ARMOR_COMPONENT" ) ) {
             bool power_armor = false;
             if( !worn.empty() ) {
@@ -7664,6 +7639,25 @@ bool player::can_wear( const item& it, bool alert ) const
             }
         }
 
+        // If it is a component then we need to do a further check to make sure we don't already
+        // have and other components filling that body part slot
+        if( it.has_flag( "POWER_ARMOR_COMPONENT" ) ) {
+            for( auto &elem : worn ) {
+                if( !elem.has_flag( "POWER_ARMOR_COMPONENT" ) ) {
+                    continue;
+                }
+                if( it.overlaps( elem ) ) {
+                    if( alert ) {
+                        add_msg_if_player( m_info,
+                                           _( "You can only wear one power armor component per body part!" ) );
+                    }
+                    return false;
+                }
+            }
+        }
+
+        // And lastly we need to check that we're not already wearing one as you can't wear
+        // duplicates of power armor stuff
         for( auto &i : worn ) {
             if( i.is_power_armor() && i.typeId() == it.typeId() ) {
                 if( alert ) {

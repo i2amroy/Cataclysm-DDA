@@ -1213,6 +1213,13 @@ public:
          */
         bool covers( body_part bp ) const;
         /**
+         * Whether this item and another item have any overlap in coverage when worn.
+         *
+         * @param it the second item for comparison
+         * @return true if the items have any overlap, false if they do not
+         */
+        bool overlaps( const item &it ) const;
+        /**
          * Bitset of all covered body parts.
          *
          * If the bit is set, the body part is covered by this

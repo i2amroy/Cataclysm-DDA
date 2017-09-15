@@ -7295,7 +7295,8 @@
     "use_action": {
       "type": "ups_based_armor",
       "activate_msg": "Your power armor engages.",
-      "deactive_msg": "Your power armor disengages."
+      "deactive_msg": "Your power armor disengages.",
+      "passive_cost": 4
     },
     "flags": [ "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "POWER_ARMOR" ]
   },
@@ -7345,7 +7346,8 @@
     "use_action": {
       "type": "ups_based_armor",
       "activate_msg": "Your power armor engages.",
-      "deactive_msg": "Your power armor disengages."
+      "deactive_msg": "Your power armor disengages.",
+      "passive_cost": 4
     },
     "flags": [ "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "POWER_ARMOR" ]
   },
@@ -7446,7 +7448,8 @@
     "use_action": {
       "type": "ups_based_armor",
       "activate_msg": "Your power armor engages.",
-      "deactive_msg": "Your power armor disengages."
+      "deactive_msg": "Your power armor disengages.",
+      "passive_cost": 20
     },
     "flags": [ "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "POWER_ARMOR" ]
   },

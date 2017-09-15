@@ -376,6 +376,13 @@ bool item::covers( const body_part bp ) const
     return get_covered_body_parts().test(bp);
 }
 
+bool item::overlaps( const item &it ) const
+{
+    std::bitset<num_bp> test_bits = get_covered_body_parts();
+    test_bits &= it.get_covered_body_parts();
+    return test_bits.any();
+};
+
 std::bitset<num_bp> item::get_covered_body_parts() const
 {
     return get_covered_body_parts( get_side() );
