@@ -1572,11 +1572,29 @@ std::string item::info( bool showtext, std::vector<iteminfo> &info ) const
             info.push_back( iteminfo( "BASE", string_format( _( "* This item <bad>conducts</bad> electricity." ) ) ) );
         }
 
+
         // concatenate base and acquired flags...
         std::vector<std::string> flags;
-        std::set_union( type->item_tags.begin(), type->item_tags.end(),
-                        item_tags.begin(), item_tags.end(),
-                        std::back_inserter( flags ) );
+        if (active) {
+            // If we're active then we need to worry about toggled flags, so make a temporary
+            // duplicate of our type's flag listing
+            std::set<std::string> temp;
+            // Exclusive-OR it with our toggled flags to get the ones that are currently active
+            std::set_symmetric_difference( type->item_tags.begin(), type->item_tags.end(),
+                                           type->act_toggled_tags.begin(),
+                                           type->act_toggled_tags.end(),
+                                           std::inserter( temp, temp.end() ) );
+            // And then union it with our individual item flags to get the end result
+            std::set_union( temp.begin(), temp.end(),
+                            item_tags.begin(), item_tags.end(),
+                            std::back_inserter( flags ) );
+        } else {
+            // If we aren't active, on the other hand, we can just union our type flags and our
+            // individual flags to get the final result.
+            std::set_union( type->item_tags.begin(), type->item_tags.end(),
+                            item_tags.begin(), item_tags.end(),
+                            std::back_inserter( flags ) );
+        }
 
         // ...and display those which have an info description
         for( const auto &e : flags ) {
@@ -2705,13 +2723,22 @@ bool item::has_flag( const std::string &f ) const
 
     // other item type flags
     ret = type->item_tags.count(f);
-    if (ret) {
-        return ret;
+    bool toggled = type->act_toggled_tags.count(f);
+    // If we have the flag and it's not a toggled flag then just return true
+    if (ret && !toggled) {
+        return true;
+    // If we normally have it but it's toggled then return the opposite of active (so we have it
+    // when we are powered down but not when we are turned on).
+    } else if (ret && toggled) {
+        return !active;
+    // If we normally don't have it but it's toggled then return active (so we have it when we are
+    // turned on, but not when we are powered down).
+    } else if (!ret && toggled) {
+        return active;
     }
 
-    // now check for item specific flags
-    ret = item_tags.count(f);
-    return ret;
+    // Lastly check for item specific flags
+    return item_tags.count(f);
 }
 
 bool item::has_any_flag( const std::vector<std::string>& flags ) const

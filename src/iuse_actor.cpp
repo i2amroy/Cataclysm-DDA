@@ -768,7 +768,7 @@ long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) 
                 // We didn't have enough charge to cover the passive costs, deactivate the item and
                 // print out the out of power message
                 it.active = false;
-                if( deactive_msg.empty() ) {
+                if( out_of_power_msg.empty() ) {
                     p.add_msg_if_player( m_bad, _( "Your %s shuts down!" ), it.tname().c_str() );
                 } else {
                     p.add_msg_if_player( m_bad, _( out_of_power_msg.c_str() ),
