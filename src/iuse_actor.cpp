@@ -754,7 +754,7 @@ long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) 
         if( passive_cost != 0 ) {
             // If we have a warning message check to see if we will cross the warning threshold
             if( !warning_msg.empty() ) {
-                int current_power = p.get_armor_power( it.is_power_armor() );
+                int current_power = p.get_armor_power( p.can_interface_armor() );
                 if( current_power > warning_threshold &&
                     current_power - passive_cost <= warning_threshold ) {
                     p.add_msg_if_player( m_warning, _( warning_msg.c_str() ),
