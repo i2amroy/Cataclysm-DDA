@@ -18,6 +18,7 @@
 #include "vehicle.h"
 #include "veh_interact.h"
 #include "cata_utility.h"
+#include "iuse_actor.h"
 
 #include <algorithm>
 #include <sstream>
@@ -1363,8 +1364,18 @@ void layer_item( std::array<encumbrance_data, num_bp> &vals,
     // For the purposes of layering penalty, set a min of 2 and a max of 10 per item.
     int layering_encumbrance = std::min( 10, std::max( 2, encumber_val ) );
 
-    const int armorenc = !power_armor || !it.has_flag( "POWER_ARMOR" ) ?
-        encumber_val : std::max( 0, encumber_val - 40 );
+    // Handle reductions for ups based armor (such as power armor)
+    int enc_reduction = 0;
+    if (power_armor && it.is_ups_armor()) {
+        const auto test_func = it.type->get_use( "ups_based_armor" );
+        // If the item is a ups_based_armor, and has a proper actor pointer
+        if( test_func != nullptr && test_func->get_actor_ptr() != nullptr ) {
+            const auto actor = dynamic_cast<const ups_based_armor_actor *>( test_func->get_actor_ptr() );
+            enc_reduction = actor->enc_reduction;
+        }
+    }
+
+    const int armorenc = std::max( 0, encumber_val - enc_reduction );
 
     for( size_t i = 0; i < num_bp; i++ ) {
         body_part bp = body_part( i );

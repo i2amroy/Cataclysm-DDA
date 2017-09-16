@@ -306,11 +306,13 @@ class ups_based_armor_actor : public iuse_actor
         int warning_threshold;
         /** Shown when it runs out of power. */
         std::string out_of_power_msg;
-        /** Amount of passive drain from the item */
+        /** Amount of passive power drain from the item. */
         int passive_cost;
         /** Whether this item is activated directly by the player or is activated indirectly by
-         * powering the main armor */
+         * powering the main armor. */
         bool indirect_act;
+        /** The amount the encumbrance of the item is reduced by while activated. */
+        int enc_reduction;
 
         ups_based_armor_actor( const std::string &type = "ups_based_armor" ) : iuse_actor( type ) {}
 

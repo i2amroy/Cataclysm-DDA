@@ -737,6 +737,7 @@ void ups_based_armor_actor::load( JsonObject &obj )
     obj.read( "out_of_power_msg", out_of_power_msg );
     obj.read( "passive_cost", passive_cost );
     obj.read( "indirect_act", indirect_act );
+    obj.read( "enc_reduction", enc_reduction );
 }
 
 bool has_powersource(const item &i, const player &p) {
