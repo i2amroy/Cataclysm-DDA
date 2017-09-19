@@ -6044,9 +6044,9 @@ void game::flashbang( const tripoint &p, bool player_immune)
                 }
             } else if( u.has_trait( trait_PER_SLIME_OK ) ) {
                 flash_mod = 8; // Just retract those and extrude fresh eyes
-            } else if( u.has_bionic( bionic_id( "bio_sunglasses" ) ) || u.is_wearing( "rm13_armor_on" ) ) {
+            } else if( u.has_bionic( bionic_id( "bio_sunglasses" ) ) || u.worn_with_flag( "FLASH_PROTECTION" ) ) {
                 flash_mod = 6;
-            } else if( u.worn_with_flag( "BLIND" ) || u.worn_with_flag( "FLASH_PROTECTION" ) ) {
+            } else if( u.worn_with_flag( "BLIND" ) ) {
                 flash_mod = 3; // Not really proper flash protection, but better than nothing
             }
             u.add_env_effect( effect_blind, bp_eyes, (12 - flash_mod - dist) / 2, 10 - dist );

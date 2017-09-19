@@ -7297,7 +7297,7 @@
       "deactive_msg": "You deactivate your power armor.",
       "out_of_power_msg": "Your power armor turns off!",
       "passive_cost": 4,
-      "enc_reduction": 40
+      "enc_reduction": 50
     },
     "flags": [ "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "POWER_ARMOR" ]
   },
@@ -7316,7 +7316,7 @@
     "symbol": "[",
     "color": "light_gray",
     "coverage": 100,
-    "encumbrance": 40,
+    "encumbrance": 20,
     "storage": 120,
     "material_thickness": 10,
     "flags": [ "WATERPROOF", "STURDY", "BELTED", "POWER_ARMOR_COMPONENT" ]
@@ -7339,7 +7339,7 @@
     "coverage": 100,
     "encumbrance": 100,
     "storage": 16,
-    "warmth": 90,
+    "warmth": 70,
     "material_thickness": 14,
     "environmental_protection": 18,
     "use_action": {
@@ -7348,7 +7348,7 @@
       "deactive_msg": "You deactivate your power armor.",
       "out_of_power_msg": "Your power armor turns off!",
       "passive_cost": 6,
-      "enc_reduction": 40
+      "enc_reduction": 80
     },
     "flags": [ "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "POWER_ARMOR" ]
   },
@@ -7382,17 +7382,17 @@
       "warning_threshold": 100,
       "passive_cost": 2,
       "indirect_act": true,
-      "enc_reduction": 40
+      "enc_reduction": 50
     },
     "flags": [ "WATERPROOF", "STURDY", "POWER_ARMOR_HELMET" ],
-    "active_flags": [ "WATCH", "PARTIAL_DEAF", "THERMOMETER" ]
+    "active_flags": [ "WATCH", "PARTIAL_DEAF", "THERMOMETER", "SUN_GLASSES" ]
   },
   {
     "id": "power_armor_helmet_heavy",
     "type": "ARMOR",
     "category": "armor",
     "name": "heavy power armor helmet",
-    "description": "A power armor helmet designed for use with the DoubleTech Power Armor, Mk.  II-H.  This improved design is heavier than the Mk.  I helmet, but cooler, and offers better environmental protection.  Like all DoubleTech power armor, the control and climate-regulation systems require direct skin contact.",
+    "description": "A power armor helmet designed for use with the DoubleTech Power Armor, Mk.  II-H.  This improved design is heavier than the Mk.  I helmet and offers better environmental protection.  Like all DoubleTech power armor, the control and climate-regulation systems require direct skin contact.",
     "weight": 5442,
     "volume": 28,
     "price": 3750000,
@@ -7404,7 +7404,7 @@
     "covers": [ "HEAD", "EYES", "MOUTH" ],
     "coverage": 100,
     "encumbrance": 100,
-    "warmth": 90,
+    "warmth": 70,
     "material_thickness": 14,
     "environmental_protection": 18,
     "qualities": [ [ "GLARE", 2 ] ],
@@ -7417,10 +7417,11 @@
       "warning_threshold": 100,
       "passive_cost": 2,
       "indirect_act": true,
-      "enc_reduction": 40
+      "enc_reduction": 80
     },
-    "flags": [ "WATCH", "WATERPROOF", "STURDY", "PARTIAL_DEAF", "THERMOMETER", "POWER_ARMOR_HELMET" ],
-    "deactive_flags": [ "BLIND" ]
+    "flags": [ "WATERPROOF", "STURDY", "POWER_ARMOR_HELMET" ],
+    "deactive_flags": [ "BLIND", "DEAF" ],
+    "active_flags": [ "WATCH", "GNV_EFFECT", "THERMOMETER", "PARTIAL_DEAF", "SUN_GLASSES", "SWIM_GOGGLES" ]
   },
   {
     "id": "power_armor_helmet_light",
@@ -7442,7 +7443,7 @@
     "warmth": 30,
     "material_thickness": 8,
     "environmental_protection": 6,
-    "qualities": [ [ "GLARE", 2 ] ],
+    "qualities": [ [ "GLARE", 1 ] ],
     "use_action": {
       "type": "ups_based_armor",
       "activate_msg": "Your power armor helmet's screen flickers to life.\nDoubleTech Power Armor: ONLINE.",
@@ -7454,7 +7455,8 @@
       "indirect_act": true,
       "enc_reduction": 40
     },
-    "flags": [ "WATCH", "WATERPROOF", "STURDY", "PARTIAL_DEAF", "THERMOMETER", "POWER_ARMOR_HELMET" ]
+    "flags": [ "WATERPROOF", "STURDY", "POWER_ARMOR_HELMET", "SUN_GLASSES" ],
+    "active_flags": [ "PARTIAL_DEAF", "THERMOMETER", "WATCH" ]
   },
   {
     "id": "power_armor_light",
