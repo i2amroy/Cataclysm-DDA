@@ -734,10 +734,15 @@ void ups_based_armor_actor::load( JsonObject &obj )
     obj.read( "deactive_msg", deactive_msg );
     obj.read( "warning_msg", warning_msg );
     obj.read( "warning_threshold", warning_threshold );
+    obj.read( "warning_chance", warning_chance );
     obj.read( "out_of_power_msg", out_of_power_msg );
     obj.read( "passive_cost", passive_cost );
     obj.read( "indirect_act", indirect_act );
     obj.read( "enc_reduction", enc_reduction );
+
+    if( warning_chance < 1 ) {
+        warning_chance = 1;
+    }
 }
 
 bool has_powersource(const item &i, const player &p) {
@@ -755,8 +760,7 @@ long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) 
             // If we have a warning message check to see if we will cross the warning threshold
             if( !warning_msg.empty() ) {
                 int current_power = p.get_armor_power( p.can_interface_armor() );
-                if( current_power > warning_threshold &&
-                    current_power - passive_cost <= warning_threshold ) {
+                if( current_power < warning_threshold && one_in( warning_chance ) ) {
                     p.add_msg_if_player( m_warning, _( warning_msg.c_str() ),
                                          it.tname().c_str() );
                 }

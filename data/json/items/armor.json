@@ -6872,6 +6872,7 @@
       "deactive_msg": "Your optical cloak flickers and becomes opaque.",
       "warning_msg": "Your optical cloak flickers ominously before stabilizing.",
       "warning_threshold": 200,
+      "warning_chance": 5,
       "out_of_power_msg": "Your optical cloak flickers and goes opaque!",
       "passive_cost": 20
     },
@@ -7380,6 +7381,7 @@
       "out_of_power_msg": "Your power armor helmet's screen flickers and goes out.\nDoubleTech Power Armor: OUT OF POWER.",
       "warning_msg": "DoubleTech Power Armor: POWER LEVEL CRITICAL.",
       "warning_threshold": 100,
+      "warning_chance": 10,
       "passive_cost": 2,
       "indirect_act": true,
       "enc_reduction": 50
@@ -7415,6 +7417,7 @@
       "out_of_power_msg": "Your power armor helmet's screen flickers and goes out.\nDoubleTech Power Armor: OUT OF POWER.",
       "warning_msg": "DoubleTech Power Armor: POWER LEVEL CRITICAL.",
       "warning_threshold": 100,
+      "warning_chance": 10,
       "passive_cost": 2,
       "indirect_act": true,
       "enc_reduction": 80
@@ -7451,6 +7454,7 @@
       "out_of_power_msg": "Your power armor helmet's screen flickers and goes out.\nDoubleTech Power Armor: OUT OF POWER.",
       "warning_msg": "DoubleTech Power Armor: POWER LEVEL CRITICAL.",
       "warning_threshold": 100,
+      "warning_chance": 10,
       "passive_cost": 1,
       "indirect_act": true,
       "enc_reduction": 40
