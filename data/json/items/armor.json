@@ -7385,7 +7385,7 @@
       "enc_reduction": 40
     },
     "flags": [ "WATERPROOF", "STURDY", "POWER_ARMOR_HELMET" ],
-    "act_toggled_flags": [ "WATCH", "PARTIAL_DEAF", "THERMOMETER" ]
+    "active_flags": [ "WATCH", "PARTIAL_DEAF", "THERMOMETER" ]
   },
   {
     "id": "power_armor_helmet_heavy",
@@ -7419,7 +7419,8 @@
       "indirect_act": true,
       "enc_reduction": 40
     },
-    "flags": [ "WATCH", "WATERPROOF", "STURDY", "PARTIAL_DEAF", "THERMOMETER", "POWER_ARMOR_HELMET" ]
+    "flags": [ "WATCH", "WATERPROOF", "STURDY", "PARTIAL_DEAF", "THERMOMETER", "POWER_ARMOR_HELMET" ],
+    "deactive_flags": [ "BLIND" ]
   },
   {
     "id": "power_armor_helmet_light",

@@ -1728,7 +1728,8 @@ void Item_factory::load_basic_info( JsonObject &jo, itype &def, const std::strin
     }
 
     assign( jo, "flags", def.item_tags );
-    assign( jo, "act_toggled_flags", def.act_toggled_tags );
+    assign( jo, "active_flags", def.active_tags );;
+    assign( jo, "deactive_flags", def.deactive_tags );
 
     if( jo.has_member( "qualities" ) ) {
         set_qualities_from_json( jo, "qualities", def );

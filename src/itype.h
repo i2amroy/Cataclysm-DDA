@@ -657,7 +657,8 @@ public:
     std::set<emit_id> emits;
 
     std::set<std::string> item_tags;
-    std::set<std::string> act_toggled_tags;
+    std::set<std::string> active_tags;
+    std::set<std::string> deactive_tags;
     std::set<matec_id> techniques;
 
     // Minimum stat(s) or skill(s) to use the item

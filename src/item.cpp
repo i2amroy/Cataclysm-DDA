@@ -1573,25 +1573,30 @@ std::string item::info( bool showtext, std::vector<iteminfo> &info ) const
         }
 
 
-        // concatenate base and acquired flags...
+        // Get all of the current flags
         std::vector<std::string> flags;
+        // first make a temporary set to hold our first union
+        std::set<std::string> temp;
         if (active) {
-            // If we're active then we need to worry about toggled flags, so make a temporary
-            // duplicate of our type's flag listing
-            std::set<std::string> temp;
-            // Exclusive-OR it with our toggled flags to get the ones that are currently active
-            std::set_symmetric_difference( type->item_tags.begin(), type->item_tags.end(),
-                                           type->act_toggled_tags.begin(),
-                                           type->act_toggled_tags.end(),
-                                           std::inserter( temp, temp.end() ) );
-            // And then union it with our individual item flags to get the end result
+            // Union with our active only flags
+            std::set_union(type->item_tags.begin(), type->item_tags.end(),
+                           type->active_tags.begin(),
+                           type->active_tags.end(),
+                           std::inserter( temp, temp.end() ) );
+
+            // and then union it with our individual item flags to get the end result
             std::set_union( temp.begin(), temp.end(),
                             item_tags.begin(), item_tags.end(),
                             std::back_inserter( flags ) );
         } else {
-            // If we aren't active, on the other hand, we can just union our type flags and our
-            // individual flags to get the final result.
-            std::set_union( type->item_tags.begin(), type->item_tags.end(),
+            // Union with our deactive only flags
+            std::set_union(type->item_tags.begin(), type->item_tags.end(),
+                           type->active_tags.begin(),
+                           type->active_tags.end(),
+                           std::inserter( temp, temp.end() ) );
+
+            // and then union it with our individual item flags to get the end result
+            std::set_union( temp.begin(), temp.end(),
                             item_tags.begin(), item_tags.end(),
                             std::back_inserter( flags ) );
         }
@@ -1729,6 +1734,42 @@ std::string item::info( bool showtext, std::vector<iteminfo> &info ) const
             //~ %1$s is the name of a fault and %2$s is the description of the fault
             info.emplace_back( "DESCRIPTION", string_format( _( "* <bad>Faulty %1$s</bad>.  %2$s" ),
                                e.obj().name().c_str(), e.obj().description().c_str() ) );
+        }
+
+        if( !type->active_tags.empty() || !type->deactive_tags.empty() ) {
+            insert_separation_line();
+            if( !type->active_tags.empty() ) {
+                if( active ) {
+                    info.emplace_back( "DESCRIPTION",
+                                       _( "When deactivated no longer will:" ) );
+                } else {
+                    info.emplace_back( "DESCRIPTION",
+                                       _( "When activated:" ) );
+                }
+                for( const auto &e : type->active_tags ) {
+                    auto &f = json_flag::get( e );
+                    if( !f.info().empty() ) {
+                        info.emplace_back( "DESCRIPTION",
+                                           string_format( "* %s", _( f.info().c_str() ) ) );
+                    }
+                }
+            }
+            if( !type->deactive_tags.empty() ) {
+                if( active ) {
+                    info.emplace_back( "DESCRIPTION",
+                                       _( "When deactivated:" ) );
+                } else {
+                    info.emplace_back( "DESCRIPTION",
+                                       _( "When activated no longer will:" ) );
+                }
+                for( const auto &e : type->deactive_tags ) {
+                    auto &f = json_flag::get( e );
+                    if( !f.info().empty() ) {
+                        info.emplace_back( "DESCRIPTION",
+                                           string_format( "* %s", _( f.info().c_str() ) ) );
+                    }
+                }
+            }
         }
 
         // does the item fit in any holsters?
@@ -2710,8 +2751,6 @@ void item::unset_flags()
 
 bool item::has_flag( const std::string &f ) const
 {
-    bool ret = false;
-
     if( json_flag::get( f ).inherit() ) {
         for( const auto e : is_gun() ? gunmods() : toolmods() ) {
             // gunmods fired separately do not contribute to base gun flags
@@ -2722,23 +2761,16 @@ bool item::has_flag( const std::string &f ) const
     }
 
     // other item type flags
-    ret = type->item_tags.count(f);
-    bool toggled = type->act_toggled_tags.count(f);
-    // If we have the flag and it's not a toggled flag then just return true
-    if (ret && !toggled) {
+    if( type->item_tags.count( f ) ) {
         return true;
-    // If we normally have it but it's toggled then return the opposite of active (so we have it
-    // when we are powered down but not when we are turned on).
-    } else if (ret && toggled) {
-        return !active;
-    // If we normally don't have it but it's toggled then return active (so we have it when we are
-    // turned on, but not when we are powered down).
-    } else if (!ret && toggled) {
-        return active;
+    }
+    if( ( active && type->active_tags.count( f ) ) ||
+        ( !active && type->deactive_tags.count( f ) ) ) {
+        return true;
     }
 
     // Lastly check for item specific flags
-    return item_tags.count(f);
+    return item_tags.count( f );
 }
 
 bool item::has_any_flag( const std::vector<std::string>& flags ) const
