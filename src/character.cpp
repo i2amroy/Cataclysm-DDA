@@ -462,10 +462,10 @@ void Character::recalc_sight_limits()
     if( has_trait( trait_DEBUG_NIGHTVISION ) ) {
         vision_mode_cache.set( DEBUG_NIGHTVISION );
     }
-    if( has_nv() ) {
+    if( has_nv() == 1 ) {
         vision_mode_cache.set( NV_GOGGLES );
     }
-    if( has_active_mutation( trait_NIGHTVISION3 ) || is_wearing("rm13_armor_on") ) {
+    if( has_active_mutation( trait_NIGHTVISION3 ) || has_nv() == 3 ) {
         vision_mode_cache.set( NIGHTVISION_3 );
     }
     if( has_active_mutation( trait_ELFA_FNV ) ) {
@@ -1295,14 +1295,17 @@ void Character::reset()
     Creature::reset();
 }
 
-bool Character::has_nv()
+int Character::has_nv()
 {
-    static bool nv = false;
+    static int nv = false;
 
     if( !nv_cached ) {
         nv_cached = true;
-        nv = (worn_with_flag("GNV_EFFECT") ||
-              has_active_bionic( bionic_id( "bio_night_vision" ) ) );
+        if (worn_with_flag("GNV_EFFECT") || has_active_bionic( bionic_id( "bio_night_vision" ))) {
+            nv = 1;
+        } else if (worn_with_flag("NV_EFFECT")) {
+            nv = 3;
+        }
     }
 
     return nv;

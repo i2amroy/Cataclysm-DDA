@@ -7386,8 +7386,8 @@
       "indirect_act": true,
       "enc_reduction": 80
     },
-    "flags": [ "WATERPROOF", "STURDY", "POWER_ARMOR_HELMET" ],
-    "active_flags": [ "WATCH", "PARTIAL_DEAF", "THERMOMETER", "SUN_GLASSES" ]
+    "flags": [ "WATERPROOF", "STURDY", "POWER_ARMOR_HELMET", "SUN_GLASSES" ],
+    "active_flags": [ "WATCH", "PARTIAL_DEAF", "THERMOMETER" ]
   },
   {
     "id": "power_armor_helmet_heavy",
@@ -7424,7 +7424,7 @@
     },
     "flags": [ "WATERPROOF", "STURDY", "POWER_ARMOR_HELMET" ],
     "deactive_flags": [ "BLIND", "DEAF" ],
-    "active_flags": [ "WATCH", "GNV_EFFECT", "THERMOMETER", "PARTIAL_DEAF", "SUN_GLASSES", "SWIM_GOGGLES" ]
+    "active_flags": [ "WATCH", "NV_EFFECT", "THERMOMETER", "PARTIAL_DEAF", "SUN_GLASSES", "SWIM_GOGGLES" ]
   },
   {
     "id": "power_armor_helmet_light",
@@ -7459,8 +7459,8 @@
       "indirect_act": true,
       "enc_reduction": 50
     },
-    "flags": [ "WATERPROOF", "STURDY", "POWER_ARMOR_HELMET", "SUN_GLASSES" ],
-    "active_flags": [ "PARTIAL_DEAF", "THERMOMETER", "WATCH" ]
+    "flags": [ "WATERPROOF", "STURDY", "POWER_ARMOR_HELMET" ],
+    "active_flags": [ "PARTIAL_DEAF", "THERMOMETER", "WATCH", "SUN_GLASSES" ]
   },
   {
     "id": "power_armor_light",

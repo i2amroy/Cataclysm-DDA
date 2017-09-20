@@ -517,8 +517,8 @@ class Character : public Creature, public visitable<Character>
 
         bool is_immune_field( const field_id fid ) const override;
 
-        /** Returns true if the player has some form of night vision */
-        bool has_nv();
+        /** Returns and caches the level of night vision a player has. */
+        int has_nv();
 
         /**
          * Returns >0 if character is sitting/lying and relatively inactive.

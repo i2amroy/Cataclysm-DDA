@@ -111,6 +111,12 @@
     "info": "This gear <good>completely protects</good> you from <info>any gas</info>."
   },
   {
+    "id": "GNV_EFFECT",
+    "type": "json_flag",
+    "context": [ "ARMOR", "TOOL_ARMOR" ],
+    "info": "This gear grants you <good>night vision</good>."
+  },
+  {
     "id": "HOOD",
     "type": "json_flag",
     "context": [ "ARMOR", "TOOL_ARMOR" ],
@@ -128,6 +134,12 @@
     "context": [ "GUNMOD" ],
     "description": "This item is a component of the gun it is attached to.  It can't be removed without destroying it.",
     "inherit": false
+  },
+  {
+    "id": "NV_EFFECT",
+    "type": "json_flag",
+    "context": [ "ARMOR", "TOOL_ARMOR" ],
+    "info": "This gear grants you <good>colored night vision</good>."
   },
   {
     "id": "NO_CVD",
