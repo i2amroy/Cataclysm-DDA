@@ -292,7 +292,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         std::string get_category_dream(const std::string &cat, int strength) const;
 
         /** Returns true if the player is in a climate controlled area or armor */
-        bool in_climate_control();
+        bool in_climate_control(bool head);
 
         /** Returns true if the player is wearing an active optical cloak */
         bool has_active_optcloak() const;

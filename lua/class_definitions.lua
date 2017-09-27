@@ -623,7 +623,7 @@ classes = {
             { name = "hurtall", rval = nil, args = { "int", "Creature" } },
             { name = "i_at", rval = "item&", args = { "int" } },
             { name = "impact", rval = "int", args = { "int", "tripoint" } },
-            { name = "in_climate_control", rval = "bool", args = { } },
+            { name = "in_climate_control", rval = "bool", args = { "bool" } },
             { name = "install_bionics", rval = "bool", args = { "itype" } },
             { name = "install_bionics", rval = "bool", args = { "itype", "int" } },
             { name = "intimidation", rval = "int", args = { } },

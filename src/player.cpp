@@ -1101,7 +1101,8 @@ void player::update_bodytemp()
     const bool has_sleep_state = has_sleep || in_sleep_state();
     const bool has_heatsink = has_bionic( bio_heatsink ) || is_wearing( "rm13_armor_on" );
     const bool has_common_cold = has_effect( effect_common_cold );
-    const bool has_climate_control = in_climate_control();
+    const bool has_climate_control_body = in_climate_control( false );
+    const bool has_climate_control_head = in_climate_control( true );
     const bool use_floor_warmth = can_use_floor_warmth();
     const furn_id furn_at_pos = g->m.furn( pos() );
     // Temperature norms
@@ -1302,7 +1303,8 @@ void player::update_bodytemp()
         }
 
         // Climate Control eases the effects of high and low ambient temps
-        if( has_climate_control ) {
+        if( ( i != bp_head && has_climate_control_body ) ||
+            ( i == bp_head && has_climate_control_head ) ) {
             temp_conv[i] = temp_corrected_by_climate_control( temp_conv[i] );
         }
 
@@ -3110,19 +3112,43 @@ std::string player::get_category_dream( const std::string &cat,
     return random_entry( selected_dream.messages );
 }
 
-bool player::in_climate_control()
+bool player::in_climate_control( bool head )
 {
     bool regulated_area = false;
-    // Check
+    // First see if we have a climate control bionic
     if( has_active_bionic( bio_climate ) ) {
         return true;
     }
+    // Then check all of our items for power armor
+    bool active_armor = false;
+    bool pa_helmet_worn = false;
     for( auto &w : worn ) {
+        // rm13 armor covers your whole body
         if( w.typeId() == "rm13_armor_on" ) {
             return true;
         }
-        if( w.active && w.is_power_armor() ) {
-            return true;
+        // But power armor cares about a helmet
+        if( w.active && w.has_flag( "POWER_ARMOR" ) ) {
+            // If we don't care about the head, or we've already found a helmet then return true
+            if( !head || pa_helmet_worn ) {
+                return true;
+            } else {
+                // Else just note that we've found active armor
+                active_armor = true;
+            }
+        }
+        // If we're specifically looking at the head
+        if( head ) {
+            // and the item we're looking at right now is a power armor helmet
+            if( w.has_flag( "POWER_ARMOR_HELMET" ) ) {
+                // If we've already found active power armor then return true
+                if( active_armor ) {
+                    return true;
+                } else {
+                    // Else note that we've found a helmet and keep looking for active armor
+                    pa_helmet_worn = true;
+                }
+            }
         }
     }
     if( int( calendar::turn ) >= next_climate_control_check ) {
