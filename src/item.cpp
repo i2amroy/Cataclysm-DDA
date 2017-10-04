@@ -4,6 +4,7 @@
 #include "advanced_inv.h"
 #include "player.h"
 #include "damage.h"
+#include "dispersion.h"
 #include "output.h"
 #include "skill.h"
 #include "bionics.h"
@@ -919,7 +920,7 @@ std::string item::info( bool showtext, std::vector<iteminfo> &info ) const
             } else if( is_ammo() ) {
                 info.emplace_back( "AMMO", _( "Types: " ),
                                    enumerate_as_string( type->ammo->type.begin(), type->ammo->type.end(),
-                                                        []( const ammotype &e ) { return _( e->name().c_str() ); }, false ) );
+                                                        []( const ammotype &e ) { return e->name(); }, false ) );
             }
 
             const auto& ammo = *ammo_data()->ammo;
@@ -1013,9 +1014,20 @@ std::string item::info( bool showtext, std::vector<iteminfo> &info ) const
             info.emplace_back( "GUN", space + _( "Maximum range: " ), "<num>", max_gun_range );
         }
 
-        int aim_mv = g->u.gun_engagement_moves( *mod );
-        if( aim_mv > 0 ) {
-            info.emplace_back( "GUN", _( "Maximum aiming time: " ), _( "<num> seconds" ), int( aim_mv / 16.67 ), true, "", true, true );
+        info.emplace_back( "GUN", _( "Base aim speed: " ), "<num>", g->u.aim_per_move( *mod, MAX_RECOIL ), true, "", true, true );
+        for( const aim_type type : g->u.get_aim_types( *mod ) ) {
+            // Nameless aim levels don't get an entry.
+            if( type.name.empty() ) {
+                continue;
+            }
+            info.emplace_back( "GUN", _( type.name.c_str() ) );
+            int max_dispersion = g->u.get_weapon_dispersion( *mod ).max();
+            int range = range_with_even_chance_of_good_hit( max_dispersion + type.threshold );
+            info.emplace_back( "GUN", _( "Even chance of good hit at range: " ),
+                               _( "<num>" ), range );
+            int aim_mv = g->u.gun_engagement_moves( *mod, type.threshold );
+            info.emplace_back( "GUN", _( "Time to reach aim level: " ), _( "<num> seconds" ),
+                               TICKS_TO_SECONDS( aim_mv ), false, "", true, true );
         }
 
         info.push_back( iteminfo( "GUN", _( "Damage: " ), "", mod->gun_damage( false ), true, "", false, false ) );
@@ -1180,9 +1192,9 @@ std::string item::info( bool showtext, std::vector<iteminfo> &info ) const
             info.push_back( iteminfo( "GUNMOD", _( "Sight dispersion: " ), "",
                                       mod->sight_dispersion, true, "", true, true ) );
         }
-        if( mod->aim_cost >= 0 ) {
-            info.push_back( iteminfo( "GUNMOD", _( "Aim cost: " ), "",
-                                      mod->aim_cost, true, "", true, true ) );
+        if( mod->aim_speed >= 0 ) {
+            info.push_back( iteminfo( "GUNMOD", _( "Aim speed: " ), "",
+                                      mod->aim_speed, true, "", true, true ) );
         }
         if( mod->damage != 0 ) {
             info.push_back( iteminfo( "GUNMOD", _( "Damage: " ), "", mod->damage, true,
@@ -1347,9 +1359,11 @@ std::string item::info( bool showtext, std::vector<iteminfo> &info ) const
                 }
             }
 
-            info.push_back( iteminfo( "BOOK", "",
-                                      _( "Requires <info>intelligence of</info> <num> to easily read." ),
-                                      book->intel, true, "", true, true ) );
+            if( book->intel != 0 ) {
+                info.push_back( iteminfo( "BOOK", "",
+                                          _( "Requires <info>intelligence of</info> <num> to easily read." ),
+                                          book->intel, true, "", true, true ) );
+            }
             if( book->fun != 0 ) {
                 info.push_back( iteminfo( "BOOK", "",
                                           _( "Reading this book affects your morale by <num>" ),
@@ -4081,7 +4095,7 @@ int item::sight_dispersion() const
 
     for( const auto e : gunmods() ) {
         const auto mod = e->type->gunmod.get();
-        if( mod->sight_dispersion < 0 || mod->aim_cost < 0 ) {
+        if( mod->sight_dispersion < 0 || mod->aim_speed < 0 ) {
             continue; // skip gunmods which don't provide a sight
         }
         res = std::min( res, mod->sight_dispersion );
@@ -4498,44 +4512,44 @@ ret_val<bool> item::is_gunmod_compatible( const item& mod ) const
     }
 
     if( !is_gun() ) {
-        return ret_val<bool>::make_failure( string_format( _( "isn't a weapon" ) ) );
+        return ret_val<bool>::make_failure( _( "isn't a weapon" ) );
 
     } else if( is_gunmod() ) {
-        return ret_val<bool>::make_failure( string_format( _( "is a gunmod and cannot be modded" ) ) );
+        return ret_val<bool>::make_failure( _( "is a gunmod and cannot be modded" ) );
 
     } else if( gunmod_find( mod.typeId() ) ) {
-        return ret_val<bool>::make_failure( string_format( _( "already has a %s" ), mod.tname( 1 ).c_str() ) );
+        return ret_val<bool>::make_failure( _( "already has a %s" ), mod.tname( 1 ).c_str() );
 
     } else if( !type->gun->valid_mod_locations.count( mod.type->gunmod->location ) ) {
-        return ret_val<bool>::make_failure( string_format( _( "doesn't have a slot for this mod" ) ) );
+        return ret_val<bool>::make_failure( _( "doesn't have a slot for this mod" ) );
 
     } else if( get_free_mod_locations( mod.type->gunmod->location ) <= 0 ) {
-        return ret_val<bool>::make_failure( string_format( _( "doesn't have enough room for another %s mod" ),
-                                            mod.type->gunmod->location.name().c_str() ) );
+        return ret_val<bool>::make_failure( _( "doesn't have enough room for another %s mod" ),
+                                            mod.type->gunmod->location.name().c_str() );
 
     } else if( !mod.type->gunmod->usable.count( gun_type() ) ) {
-        return ret_val<bool>::make_failure( string_format( _( "cannot have a %s" ), mod.tname().c_str() ) );
+        return ret_val<bool>::make_failure( _( "cannot have a %s" ), mod.tname().c_str() );
 
     } else if( typeId() == "hand_crossbow" && !!mod.type->gunmod->usable.count( "pistol" ) ) {
-        return ret_val<bool>::make_failure( string_format( _("isn't big enough to use that mod") ) );
+        return ret_val<bool>::make_failure( _("isn't big enough to use that mod") );
 
     } else if ( !mod.type->mod->acceptable_ammo.empty() && !mod.type->mod->acceptable_ammo.count( ammo_type( false ) ) ) {
         //~ %1$s - name of the gunmod, %2$s - name of the ammo
-        return ret_val<bool>::make_failure( string_format( _( "%1$s cannot be used on %2$s" ), mod.tname( 1 ).c_str(),
-                                            ammo_type( false )->name().c_str() ) );
+        return ret_val<bool>::make_failure( _( "%1$s cannot be used on %2$s" ), mod.tname( 1 ).c_str(),
+                                            ammo_type( false )->name().c_str() );
 
     } else if( mod.typeId() == "waterproof_gunmod" && has_flag( "WATERPROOF_GUN" ) ) {
-        return ret_val<bool>::make_failure( string_format( _( "is already waterproof" ) ) );
+        return ret_val<bool>::make_failure( _( "is already waterproof" ) );
 
     } else if( mod.typeId() == "tuned_mechanism" && has_flag( "NEVER_JAMS" ) ) {
-        return ret_val<bool>::make_failure( string_format( _( "is already eminently reliable" ) ) );
+        return ret_val<bool>::make_failure( _( "is already eminently reliable" ) );
 
     } else if( mod.typeId() == "brass_catcher" && has_flag( "RELOAD_EJECT" ) ) {
-        return ret_val<bool>::make_failure( string_format( _( "cannot have a brass catcher" ) ) );
+        return ret_val<bool>::make_failure( _( "cannot have a brass catcher" ) );
 
     } else if( ( mod.type->mod->ammo_modifier || !mod.type->mod->magazine_adaptor.empty() )
                && ( ammo_remaining() > 0 || magazine_current() ) ) {
-        return ret_val<bool>::make_failure( string_format( _( "must be unloaded before installing this mod" ) ) );
+        return ret_val<bool>::make_failure( _( "must be unloaded before installing this mod" ) );
     }
 
     return ret_val<bool>::make_success();
