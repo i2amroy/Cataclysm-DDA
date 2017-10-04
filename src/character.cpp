@@ -1095,6 +1095,16 @@ bool Character::is_wearing(const itype_id & it) const
     return false;
 }
 
+bool Character::is_wearing_active(const itype_id & it) const
+{
+    for (auto &i : worn) {
+        if (i.typeId() == it && i.active) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Character::is_wearing_on_bp(const itype_id & it, body_part bp) const
 {
     for (auto &i : worn) {

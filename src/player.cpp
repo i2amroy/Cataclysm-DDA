@@ -1989,6 +1989,11 @@ int player::run_cost( int base_cost, bool diag ) const
             movecost *= 1.5f;
         }
     }
+    if( is_wearing_active( "power_armor_roller_blades" ) ) {
+        if( on_road ) {
+            movecost *= .3f;
+        }
+    }
     // Quad skates might be more stable than inlines,
     // but that also translates into a slower speed when on good surfaces.
     if( is_wearing( "rollerskates" ) ) {

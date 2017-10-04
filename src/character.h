@@ -490,6 +490,8 @@ class Character : public Creature, public visitable<Character>
         // --------------- Clothing Stuff ---------------
         /** Returns true if the player is wearing the item. */
         bool is_wearing(const itype_id &it) const;
+        /** Returns true if the player is wearing the item and the item is active. */
+        bool is_wearing_active(const itype_id &it) const;
         /** Returns true if the player is wearing the item on the given body_part. */
         bool is_wearing_on_bp(const itype_id &it, body_part bp) const;
         /** Returns true if the player is wearing an item with the given flag. */
