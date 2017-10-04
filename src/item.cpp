@@ -2138,6 +2138,19 @@ void item::on_wear( Character &p )
         g->add_artifact_messages( type->artifact->effects_worn );
     }
 
+    // Handle indirect activations
+    const auto test_func = type->get_use( "ups_based_armor" );
+    // If the item is a ups_based_armor, and has a proper actor pointer
+    if( test_func != nullptr && test_func->get_actor_ptr() != nullptr ) {
+        const auto actor = dynamic_cast<const ups_based_armor_actor *>( test_func->get_actor_ptr() );
+        // and the item is indirectly activated and we have active armor
+        if( actor->indirect_act ) {
+            if (p.is_wearing_active_power_armor()) {
+                active = true;
+            }
+        }
+    }
+
     p.on_item_wear( *this );
 }
 
@@ -2147,6 +2160,17 @@ void item::on_takeoff( Character &p )
 
     if (is_sided()) {
         set_side( side::BOTH );
+    }
+
+    // Handle indirect deactivations
+    const auto test_func = type->get_use( "ups_based_armor" );
+    // If the item is a ups_based_armor, and has a proper actor pointer
+    if( test_func != nullptr && test_func->get_actor_ptr() != nullptr ) {
+        const auto actor = dynamic_cast<const ups_based_armor_actor *>( test_func->get_actor_ptr() );
+        // and the item is indirectly activated and we have active armor
+        if( actor->indirect_act ) {
+            active = false;
+        }
     }
 }
 
