@@ -736,5 +736,10 @@
         "type" : "item_action",
         "id" : "FEEDCATTLE",
         "name" : "Place"
+    },
+    {
+        "type" : "item_action",
+        "id" : "JUMP_JETS",
+        "name" : "Launch"
     }
 ]

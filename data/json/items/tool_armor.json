@@ -2126,5 +2126,26 @@
         "encumbrance" : 1,
         "flags" : ["BELTED"],
         "coverage" : 5
+    },
+    {
+        "type" : "TOOL_ARMOR",
+        "id" : "jump_jets",
+        "name" : "jump jets",
+        "volume" : 80,
+        "description" : "A waterproof digital watch with a built-in electronic game system, powered by standard batteries.  Activate to play.",
+        "weight" : 9072,
+        "to_hit": 1,
+        "bashing": 1,
+        "symbol": "[",
+        "color": "dark_gray",
+        "covers" : [ "LEGS", "FEET" ],
+        "price": 3750000,
+        "material" : [ "steel", "superalloy" ],
+        "coverage" : 80,
+        "warmth" : 20,
+        "encumbrance" : 20,
+        "material_thickness" : 2,
+        "use_action": "JUMP_JETS",
+        "flags": [ "WATERPROOF", "STURDY", "BELTED", "POWER_ARMOR_COMPONENT" ]
     }
 ]

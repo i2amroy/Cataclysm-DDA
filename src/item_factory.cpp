@@ -512,6 +512,7 @@ void Item_factory::init()
     add_iuse( "INHALER", &iuse::inhaler );
     add_iuse( "JACKHAMMER", &iuse::jackhammer );
     add_iuse( "JET_INJECTOR", &iuse::jet_injector );
+    add_iuse( "JUMP_JETS", &iuse::jumpjets );
     add_iuse( "LADDER", &iuse::ladder );
     add_iuse( "LUMBER", &iuse::lumber );
     add_iuse( "MAKEMOUND", &iuse::makemound );

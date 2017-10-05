@@ -7899,3 +7899,29 @@ int iuse::washclothes( player *p, item *it, bool, const tripoint& )
 
     return 0;
 }
+
+int iuse::jumpjets( player *p, item *it, bool, const tripoint & )
+{
+    ( void )it;
+    if( !p->is_wearing_active_power_armor() ) {
+        p->add_msg_if_player( m_info,
+                              _( "The main power armor must be activated to power your jump jets." ) );
+        return 0;
+    }
+    if( p->get_armor_power( p->can_interface_armor() ) < 200 ) {
+        p->add_msg_if_player( m_info, _( "Insufficient power for liftoff." ) );
+        return 0;
+    }
+
+    tripoint dirp;
+    if( !choose_direction( _( "Press a direction to launch towards:" ), dirp ) ) {
+        add_msg( m_info, _( "Never mind." ) );
+        return 0;
+    }
+    p->armor_drain_power( 200, true );
+    tripoint oldpos = p->global_square_location();
+    g->fling_creature( p, g->m.coord_to_angle( p->posx(), p->posy(), p->posx() + dirp.x,
+                                               p->posy() + dirp.y ), 75, true );
+    g->explosion( g->m.getlocal( oldpos ), 20, .3, true );
+    return 0;
+}
