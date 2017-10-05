@@ -6858,7 +6858,8 @@
       "out_of_power_msg": "Your optical cloak flickers and goes opaque!",
       "passive_cost": 20
     },
-    "flags": [ "OVERSIZE", "HOOD", "WATERPROOF", "OUTER", "VARSIZE" ]
+    "flags": [ "OVERSIZE", "HOOD", "WATERPROOF", "OUTER", "VARSIZE" ],
+    "active_flags": [ "INVISIBILITY" ]
   },
   {
     "id": "panties",

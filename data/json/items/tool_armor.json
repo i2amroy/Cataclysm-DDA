@@ -2132,7 +2132,7 @@
         "id" : "jump_jets",
         "name" : "jump jets",
         "volume" : 80,
-        "description" : "A waterproof digital watch with a built-in electronic game system, powered by standard batteries.  Activate to play.",
+        "description" : "These BattleTech Jump Jets function in combination with power armor to allow the wearer to launch themselves in a desired direction.  BattleTech is not responsible for any damage caused and encourages helmet use during launch.  Do not use inside.",
         "weight" : 9072,
         "to_hit": 1,
         "bashing": 1,

@@ -478,8 +478,6 @@ static const trait_id trait_WINGS_BUTTERFLY( "WINGS_BUTTERFLY" );
 static const trait_id trait_WINGS_INSECT( "WINGS_INSECT" );
 static const trait_id trait_WOOLALLERGY( "WOOLALLERGY" );
 
-static const itype_id OPTICAL_CLOAK_ITEM_ID( "optical_cloak" );
-
 player_morale_ptr::player_morale_ptr( const player_morale_ptr &rhs ) :
     std::unique_ptr<player_morale>( rhs ? new player_morale( *rhs ) : nullptr )
 {
@@ -3158,7 +3156,7 @@ std::list<item *> player::get_radio_items()
 bool player::has_active_optcloak() const
 {
     for( auto &w : worn ) {
-        if( w.active && w.typeId() == OPTICAL_CLOAK_ITEM_ID ) {
+        if( w.has_flag("INVISIBILITY") ) {
             return true;
         }
     }

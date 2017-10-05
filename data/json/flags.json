@@ -136,6 +136,12 @@
     "inherit": false
   },
   {
+    "id": "INVISIBILITY",
+    "type": "json_flag",
+    "context": [ "ARMOR", "TOOL_ARMOR" ],
+    "info": "This gear makes you <good>invisible</good>."
+  },
+  {
     "id": "NV_EFFECT",
     "type": "json_flag",
     "context": [ "ARMOR", "TOOL_ARMOR" ],
