@@ -740,6 +740,7 @@ void ups_based_armor_actor::load( JsonObject &obj )
     obj.read( "passive_cost", passive_cost );
     obj.read( "indirect_act", indirect_act );
     obj.read( "enc_reduction", enc_reduction );
+    obj.read( "requires_main_power", requires_main_power );
 
     if( warning_chance < 1 ) {
         warning_chance = 1;
@@ -756,6 +757,12 @@ bool has_powersource(const item &i, const player &p) {
 long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) const
 {
     if( t ) {
+        // Sanity check our items in case our main armor got destroyed or something went terribly wrong
+        if( ( indirect_act || requires_main_power ) && !p.is_wearing_active_power_armor() ) {
+            it.active = false;
+            return 0;
+        }
+
         // Charge the passive cost of the item to the player
         if( passive_cost != 0 ) {
             // If we have a warning message check to see if we will cross the warning threshold
@@ -785,6 +792,7 @@ long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) 
         // Item doesn't have a passive cost to itself
         return 0;
     }
+
     if( indirect_act ) {
         p.add_msg_if_player( m_info, _( "%s draws its power from a main armor system, you can't activate it directly." ),
                              it.tname().c_str() );
@@ -796,15 +804,23 @@ long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) 
                              it.tname().c_str() );
         return 0;
     }
-    if( !it.active && !has_powersource( it, p ) ) {
-        p.add_msg_if_player( m_info,
-                             _( "You need some source of power for your %s (a simple UPS will do)." ),
-                             it.tname().c_str() );
-        if( it.has_flag( "POWER_ARMOR" ) ) {
+    if( !it.active ) {
+        if( !has_powersource( it, p ) ) {
             p.add_msg_if_player( m_info,
-                                 _( "There is also a certain bionic that helps with this kind of armor." ) );
+                                 _( "You need some source of power for your %s (a simple UPS will do)." ),
+                                 it.tname().c_str() );
+            if( it.has_flag( "POWER_ARMOR" ) ) {
+                p.add_msg_if_player( m_info,
+                                     _( "There is also a certain bionic that helps with this kind of armor." ) );
+            }
+            return 0;
         }
-        return 0;
+
+        if( requires_main_power && !p.is_wearing_active_power_armor() ) {
+            p.add_msg_if_player( m_info, _( "%s draws power through a main armor system, which must be activated before this can be activated." ),
+                                 it.tname().c_str() );
+            return 0;
+        }
     }
     it.active = !it.active;
     if( it.active ) {
@@ -820,20 +836,29 @@ long ups_based_armor_actor::use( player &p, item &it, bool t, const tripoint& ) 
             p.add_msg_if_player( m_info, _( deactive_msg.c_str() ), it.tname().c_str() );
         }
     }
-    // Handle indirect activations if necessary, this involves a bit of drilling down on our other
-    // items to actually get to the information we need
+    // Handle indirect activations and main power reliance if necessary, this involves a bit of
+    // drilling down on our other items to actually get to the information we need
     if( it.has_flag( "POWER_ARMOR" ) ) {
         // Go through each of our worn items
         for( auto &w : p.worn ) {
             const auto test_func = w.type->get_use( "ups_based_armor" );
-            // If the item is a ups_based_armor, and has a proper actor pointer
+            // If the item is a ups_based_armor, and has a proper actor pointer...
             if( test_func != nullptr && test_func->get_actor_ptr() != nullptr ) {
                 const auto actor = dynamic_cast<const ups_based_armor_actor *>( test_func->get_actor_ptr() );
-                // and the item is indirectly activated
+                bool message = false;
+                // and the item is indirectly activated...
                 if( actor->indirect_act ) {
-                    // Then make it match our activation state
+                    // then make it match our activation state.
                     w.active = it.active;
-                    // and print out the necessary message.
+                    message = true;
+                    // else if it requires main power and we just shut down then turn it off as well
+                } else if( actor->requires_main_power && !it.active ) {
+                    w.active = false;
+                    message = true;
+                }
+
+                // Print out the necessary message if needed.
+                if( message ) {
                     if( w.active ) {
                         if( actor->activate_msg.empty() ) {
                             p.add_msg_if_player( m_info, _( "You activate your %s." ),

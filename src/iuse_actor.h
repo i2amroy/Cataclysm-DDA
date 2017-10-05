@@ -291,8 +291,6 @@ class place_monster_iuse : public iuse_actor
 
 /**
  * Items that can be worn and can be activated to consume energy from UPS.
- * Note that the energy consumption is done in @ref player::process_active_items, it is
- * *not* done by this class!
  */
 class ups_based_armor_actor : public iuse_actor
 {
@@ -317,6 +315,10 @@ class ups_based_armor_actor : public iuse_actor
         bool indirect_act;
         /** The amount the encumbrance of the item is reduced by while activated. */
         int enc_reduction;
+        /** If this is true then the item can only be activated if the player already has a
+         * POWER_ARMOR item that is also activated.
+         */
+        bool requires_main_power;
 
         ups_based_armor_actor( const std::string &type = "ups_based_armor" ) : iuse_actor( type ) {}
 

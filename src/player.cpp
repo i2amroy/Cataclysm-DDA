@@ -1990,6 +1990,10 @@ int player::run_cost( int base_cost, bool diag ) const
     if( is_wearing_active( "power_armor_roller_blades" ) ) {
         if( on_road ) {
             movecost *= .3f;
+        } else if (flatground) {
+            movecost *= .6f;
+        } else {
+            movecost *= .9f;
         }
     }
     // Quad skates might be more stable than inlines,
@@ -11298,7 +11302,8 @@ bool player::sees( const Creature &critter ) const
     if (dist <= 3 && has_trait( trait_ANTENNAE )) {
         return true;
     }
-    if( critter.digging() && has_active_bionic( bio_ground_sonar ) ) {
+    if( critter.digging() && ( has_active_bionic( bio_ground_sonar ) ||
+                               is_wearing_active( "power_armor_seismic_sensors" ) ) ) {
         // Bypass the check below, the bionic sonar also bypasses the sees(point) check because
         // walls don't block sonar which is transmitted in the ground, not the air.
         // TODO: this might need checks whether the player is in the air, or otherwise not connected
