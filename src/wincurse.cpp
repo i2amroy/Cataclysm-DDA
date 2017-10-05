@@ -113,7 +113,7 @@ void WinDestroy()
     if ((WindowDC != NULL) && (ReleaseDC(WindowHandle, WindowDC) == 0)){
         WindowDC = 0;
     }
-    if ((!WindowHandle == 0) && (!(DestroyWindow(WindowHandle)))){
+    if (((!WindowHandle) == 0) && (!(DestroyWindow(WindowHandle)))){
         WindowHandle = 0;
     }
     if (!(UnregisterClassW(szWindowClass, WindowINST))){

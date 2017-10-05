@@ -7545,7 +7545,6 @@
     "covers" : [ "HEAD", "TORSO", "ARMS", "HANDS", "LEGS", "FEET" ],
     "coverage" : 100,
     "encumbrance" : 20,
-    "warmth" : 0,
     "material_thickness" : 1,
     "use_action": {
       "type": "ups_based_armor",
@@ -7578,7 +7577,6 @@
     "covers" : [ "FEET" ],
     "coverage" : 30,
     "encumbrance" : 10,
-    "warmth" : 0,
     "material_thickness" : 1,
     "use_action": {
       "type": "ups_based_armor",
@@ -7607,7 +7605,6 @@
     "covers" : [ "HEAD" ],
     "coverage" : 30,
     "encumbrance" : 10,
-    "warmth" : 0,
     "material_thickness" : 1,
     "use_action": {
       "type": "ups_based_armor",

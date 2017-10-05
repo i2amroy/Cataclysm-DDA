@@ -184,7 +184,7 @@ void Item_factory::finalize() {
         }
         for( const auto &tag : obj.deactive_tags ) {
             if( tag.size() > 6 && tag.substr( 0, 6 ) == "LIGHT_" ) {
-                int tmp = std::max( atoi( tag.substr( 6 ).c_str() ), 0 );
+                const unsigned tmp = std::max( atoi( tag.substr( 6 ).c_str() ), 0 );
                 if (tmp > obj.light_emission[0]) {
                     obj.light_emission[0] = tmp;
                 }
@@ -192,7 +192,7 @@ void Item_factory::finalize() {
         }
         for( const auto &tag : obj.active_tags ) {
             if( tag.size() > 6 && tag.substr( 0, 6 ) == "LIGHT_" ) {
-                int tmp = std::max( atoi( tag.substr( 6 ).c_str() ), 0 );
+                const unsigned tmp = std::max( atoi( tag.substr( 6 ).c_str() ), 0 );
                 if (tmp > obj.light_emission[1]) {
                     obj.light_emission[1] = tmp;
                 }
