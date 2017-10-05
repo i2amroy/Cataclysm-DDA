@@ -242,10 +242,12 @@ class game
         bool event_queued(event_type type) const;
         /** Create explosion at p of intensity (power) with (shrapnel) chunks of shrapnel.
             Explosion intensity formula is roughly power*factor^distance.
-            If factor <= 0, no blast is produced */
+            If factor <= 0, no blast is produced.
+            If shockwave is true the blast won't hit the origin square. */
         std::unordered_map<tripoint, std::pair<int, int>> explosion(
             const tripoint &p, float power, float factor = 0.8f,
-            bool fire = false, int shrapnel_count = 0, int shrapnel_mass = 10
+            bool fire = false, int shrapnel_count = 0, int shrapnel_mass = 10,
+            bool shockwave = false
         );
 
         std::unordered_map<tripoint, std::pair<int, int>> explosion(
@@ -253,7 +255,7 @@ class game
         );
 
         /** Helper for explosion, does the actual blast. */
-        void do_blast( const tripoint &p, float power, float factor, bool fire );
+        void do_blast( const tripoint &p, float power, float factor, bool fire, bool shockwave );
 
         /*
          * Emits shrapnel damaging creatures and sometimes terrain/furniture within range

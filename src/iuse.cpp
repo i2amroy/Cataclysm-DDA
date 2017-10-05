@@ -7919,9 +7919,8 @@ int iuse::jumpjets( player *p, item *it, bool, const tripoint & )
         return 0;
     }
     p->armor_drain_power( 200, true );
-    tripoint oldpos = p->global_square_location();
+    g->explosion( p->pos(), 25, .3, true, 0, 0, true );
     g->fling_creature( p, g->m.coord_to_angle( p->posx(), p->posy(), p->posx() + dirp.x,
-                                               p->posy() + dirp.y ), 75, true );
-    g->explosion( g->m.getlocal( oldpos ), 20, .3, true );
+                                               p->posy() + dirp.y ), 80, true );
     return 0;
 }

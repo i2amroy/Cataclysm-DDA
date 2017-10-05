@@ -18,6 +18,7 @@ struct explosion_data {
     float power             = -1.0f;
     float distance_factor   = 0.8f;
     bool fire               = false;
+    bool shockwave          = false;
     shrapnel_data shrapnel;
 
     /** Returns the distance at which we have `ratio` of initial power. */

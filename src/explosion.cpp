@@ -55,7 +55,7 @@ shrapnel_data load_shrapnel_data( JsonObject &jo )
 
 // (C1001) Compiler Internal Error on Visual Studio 2015 with Update 2
 void game::do_blast( const tripoint &p, const float power,
-                     const float distance_factor, const bool fire )
+                     const float distance_factor, const bool fire, const bool shockwave )
 {
     const float tile_dist = 1.0f;
     const float diag_dist = trigdist ? 1.41f * tile_dist : 1.0f * tile_dist;
@@ -150,6 +150,11 @@ void game::do_blast( const tripoint &p, const float power,
                 dist_map[dest] = next_dist;
             }
         }
+    }
+
+    // Shockwaves don't hit their origin square, so remove it now
+    if (shockwave) {
+        closed.erase(p);
     }
 
     // Draw the explosion
@@ -262,7 +267,7 @@ void game::do_blast( const tripoint &p, const float power,
 }
 
 std::unordered_map<tripoint, std::pair<int, int>> game::explosion( const tripoint &p, float power,
-        float factor, bool fire, int shrapnel_count, int shrapnel_mass )
+        float factor, bool fire, int shrapnel_count, int shrapnel_mass, bool shockwave )
 {
     explosion_data data;
     data.power = power;
@@ -270,6 +275,7 @@ std::unordered_map<tripoint, std::pair<int, int>> game::explosion( const tripoin
     data.fire = fire;
     data.shrapnel.count = shrapnel_count;
     data.shrapnel.mass = shrapnel_mass;
+    data.shockwave = shockwave;
     return explosion( p, data );
 }
 
@@ -295,7 +301,7 @@ std::unordered_map<tripoint, std::pair<int, int>> game::explosion( const tripoin
         debugmsg( "called game::explosion with factor >= 1.0 (infinite size)" );
     } else if( ex.distance_factor > 0.0f && ex.power > 0.0f ) {
         // @todo return map containing distribution of damage
-        do_blast( p, ex.power, ex.distance_factor, ex.fire );
+        do_blast( p, ex.power, ex.distance_factor, ex.fire, ex.shockwave );
     }
 
     const auto &shr = ex.shrapnel;
