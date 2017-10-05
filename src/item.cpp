@@ -3890,7 +3890,8 @@ bool item::is_funnel_container(units::volume &bigger_than) const
 
 bool item::is_emissive() const
 {
-    return light.luminance > 0 || type->light_emission > 0;
+    return light.luminance > 0 || ( !active && type->light_emission[0] > 0 ) ||
+           ( active && type->light_emission[1] > 0 );
 }
 
 bool item::is_tool() const
@@ -5098,7 +5099,7 @@ bool item::getlight(float & luminance, int & width, int & direction ) const
 
 int item::getlight_emit() const
 {
-    float lumint = type->light_emission;
+    float lumint = ( active ) ? type->light_emission[1] : type->light_emission[0];
 
     if ( lumint == 0 ) {
         return 0;

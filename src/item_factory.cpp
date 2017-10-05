@@ -177,7 +177,25 @@ void Item_factory::finalize() {
         }
         for( const auto &tag : obj.item_tags ) {
             if( tag.size() > 6 && tag.substr( 0, 6 ) == "LIGHT_" ) {
-                obj.light_emission = std::max( atoi( tag.substr( 6 ).c_str() ), 0 );
+                int tmp = std::max( atoi( tag.substr( 6 ).c_str() ), 0 );
+                obj.light_emission[0] = tmp;
+                obj.light_emission[1] = tmp;
+            }
+        }
+        for( const auto &tag : obj.deactive_tags ) {
+            if( tag.size() > 6 && tag.substr( 0, 6 ) == "LIGHT_" ) {
+                int tmp = std::max( atoi( tag.substr( 6 ).c_str() ), 0 );
+                if (tmp > obj.light_emission[0]) {
+                    obj.light_emission[0] = tmp;
+                }
+            }
+        }
+        for( const auto &tag : obj.active_tags ) {
+            if( tag.size() > 6 && tag.substr( 0, 6 ) == "LIGHT_" ) {
+                int tmp = std::max( atoi( tag.substr( 6 ).c_str() ), 0 );
+                if (tmp > obj.light_emission[1]) {
+                    obj.light_emission[1] = tmp;
+                }
             }
         }
         // for ammo not specifying loudness (or an explicit zero) derive value from other properties

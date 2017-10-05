@@ -700,7 +700,8 @@ public:
 
     int m_to_hit  = 0;  // To-hit bonus for melee combat; -5 to 5 is reasonable
 
-    unsigned light_emission = 0;   // Exactly the same as item_tags LIGHT_*, this is for lightmap.
+    // Exactly the same as item_tags LIGHT_*, this is for lightmap
+    unsigned light_emission[2] = { 0, 0 };
 
     const item_category *category = nullptr; // category pointer or NULL for automatic selection
 
